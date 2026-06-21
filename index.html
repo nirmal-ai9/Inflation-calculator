@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inflation Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c;
+    --surface:#0d1119;
+    --surface-2:#131a26;
+    --border:#1d2532;
+    --border-soft:#161d28;
+    --text:#e9edf4;
+    --muted:#7c8aa0;
+    --muted-2:#56627a;
+    --accent:#00d4ff;
+    --accent-soft:rgba(0,212,255,0.14);
+    --gold:#ffb13d;
+    --gold-soft:rgba(255,177,61,0.14);
+    --danger:#ff6b6b;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(0,212,255,0.07), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(255,177,61,0.06), transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:48px 20px 80px;
+    line-height:1.5;
+  }
+
+  .wrap{max-width:980px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    color:var(--accent);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 10px var(--accent), 0 0 20px var(--accent);
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(32px, 5vw, 46px);
+    letter-spacing:-0.01em;
+    margin-bottom:10px;
+  }
+  .sub{
+    color:var(--muted);
+    font-size:15.5px;
+    max-width:560px;
+    margin-bottom:40px;
+  }
+
+  /* ---------- Layout ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:800px){
+    .grid{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:26px;
+  }
+
+  /* ---------- Inputs ---------- */
+  .field{margin-bottom:20px;}
+  .field:last-of-type{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--muted);
+    margin-bottom:8px;
+    letter-spacing:0.02em;
+  }
+  .input-row{
+    display:flex;
+    align-items:center;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:0 14px;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .input-row:focus-within{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .input-row .prefix{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--muted-2);
+    font-size:14px;
+    padding-right:8px;
+  }
+  .input-row input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    padding:12px 0;
+    width:100%;
+  }
+  .input-row input::-webkit-outer-spin-button,
+  .input-row input::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;
+  }
+  .input-row .suffix{
+    font-size:13px;color:var(--muted-2);padding-left:8px;
+  }
+
+  .year-pair{display:flex;align-items:center;gap:10px;}
+  .year-pair .input-row{flex:1;}
+  .year-pair .to{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--muted-2);
+    font-size:13px;
+  }
+
+  .hint{
+    font-size:12px;
+    color:var(--muted-2);
+    margin-top:7px;
+  }
+
+  button#calc{
+    width:100%;
+    margin-top:26px;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    background:linear-gradient(135deg, var(--accent), #00a8d6);
+    color:#04141a;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    box-shadow:0 0 0 rgba(0,212,255,0);
+    transition:box-shadow .2s ease, transform .15s ease;
+  }
+  button#calc:hover{
+    box-shadow:0 4px 24px rgba(0,212,255,0.35);
+    transform:translateY(-1px);
+  }
+  button#calc:active{transform:translateY(0);}
+
+  .error{
+    margin-top:14px;
+    font-size:13px;
+    color:var(--danger);
+    display:none;
+  }
+
+  /* ---------- Results ---------- */
+  .ticker{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:24px 26px;
+    margin-bottom:16px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:10px;
+  }
+  .ticker .lbl{
+    font-size:13px;color:var(--muted);
+  }
+  .ticker .base-amt{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    color:var(--text);
+  }
+  .ticker .arrow{color:var(--muted-2);}
+  .ticker .result-amt{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:26px;
+    color:var(--gold);
+    text-shadow:0 0 18px rgba(255,177,61,0.45);
+  }
+  .ticker .result-year{
+    font-size:13px;color:var(--muted);
+  }
+
+  .table-panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    font-weight:600;
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  thead th:not(:first-child){text-align:right;}
+
+  tbody td{
+    padding:16px 20px;
+    border-bottom:1px solid var(--border-soft);
+    font-size:14.5px;
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{
+    opacity:0;
+    transform:translateY(6px);
+    animation:rowIn .45s ease forwards;
+  }
+
+  @keyframes rowIn{
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  td.year{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:16px;
+  }
+  td.year .since{
+    display:block;
+    font-family:'Inter', sans-serif;
+    font-weight:400;
+    font-size:11.5px;
+    color:var(--muted-2);
+    margin-top:2px;
+  }
+  td.value{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    font-size:15.5px;
+    color:var(--text);
+  }
+  td.mult{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13.5px;
+    color:var(--muted);
+  }
+  td.bar-cell{width:140px;}
+  .bar-track{
+    height:6px;
+    border-radius:4px;
+    background:var(--surface-2);
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:4px;
+    background:linear-gradient(90deg, var(--accent), var(--gold));
+    box-shadow:0 0 8px rgba(0,212,255,0.5);
+    width:0%;
+    transition:width .6s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .note{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--muted-2);
+    padding:16px 20px 20px;
+  }
+
+  @media (max-width:560px){
+    thead th:nth-child(3), tbody td.mult{display:none;}
+    td.bar-cell{width:70px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Value over time</div>
+  <h1>Inflation Calculator</h1>
+  <p class="sub">Enter an amount from a reference year, pick a date range, and see what it's equivalent to in each of those years — compounded at your chosen inflation rate.</p>
+
+  <div class="grid">
+
+    <!-- Input panel -->
+    <div class="panel">
+      <div class="field">
+        <label for="rate">Inflation rate (annual)</label>
+        <div class="input-row">
+          <input type="number" id="rate" value="6" step="0.1" inputmode="decimal">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="amount">Amount</label>
+        <div class="input-row">
+          <span class="prefix">₹</span>
+          <input type="number" id="amount" value="1000" step="1" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="baseYear">Reference year</label>
+        <div class="input-row">
+          <input type="number" id="baseYear" value="2001" step="1" inputmode="numeric">
+        </div>
+        <p class="hint">The year that amount belongs to.</p>
+      </div>
+
+      <div class="field">
+        <label>Duration</label>
+        <div class="year-pair">
+          <div class="input-row">
+            <input type="number" id="startYear" value="2020" step="1" inputmode="numeric">
+          </div>
+          <span class="to">to</span>
+          <div class="input-row">
+            <input type="number" id="endYear" value="2022" step="1" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <button id="calc">Calculate</button>
+      <p class="error" id="errMsg"></p>
+    </div>
+
+    <!-- Results -->
+    <div>
+      <div class="ticker" id="ticker"></div>
+
+      <div class="table-panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Equivalent value</th>
+              <th>Growth</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="note" id="formulaNote"></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const rateEl = document.getElementById('rate');
+  const amountEl = document.getElementById('amount');
+  const baseYearEl = document.getElementById('baseYear');
+  const startYearEl = document.getElementById('startYear');
+  const endYearEl = document.getElementById('endYear');
+  const calcBtn = document.getElementById('calc');
+  const errMsg = document.getElementById('errMsg');
+  const rowsEl = document.getElementById('rows');
+  const tickerEl = document.getElementById('ticker');
+  const noteEl = document.getElementById('formulaNote');
+
+  const fmtINR = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+
+  function showError(msg){
+    errMsg.textContent = msg;
+    errMsg.style.display = 'block';
+  }
+  function clearError(){
+    errMsg.style.display = 'none';
+  }
+
+  function calculate(){
+    clearError();
+
+    let rate = parseFloat(rateEl.value);
+    if (isNaN(rate)) rate = 6;
+
+    const amount = parseFloat(amountEl.value);
+    const baseYear = parseInt(baseYearEl.value, 10);
+    const startYear = parseInt(startYearEl.value, 10);
+    const endYear = parseInt(endYearEl.value, 10);
+
+    if (!amount || amount <= 0){
+      showError('Enter an amount greater than zero.');
+      return;
+    }
+    if (!baseYear || !startYear || !endYear){
+      showError('Enter valid years for reference and duration.');
+      return;
+    }
+    if (endYear < startYear){
+      showError('End year should be the same as or after the start year.');
+      return;
+    }
+    if (endYear - startYear > 100){
+      showError('Keep the duration to 100 years or fewer.');
+      return;
+    }
+
+    const years = [];
+    for (let y = startYear; y <= endYear; y++) years.push(y);
+
+    const values = years.map(y => amount * Math.pow(1 + rate / 100, y - baseYear));
+    const maxVal = Math.max(...values, amount);
+
+    // Ticker — headline conversion (reference year -> last year in range)
+    const lastYear = years[years.length - 1];
+    const lastVal = values[values.length - 1];
+    tickerEl.innerHTML = `
+      <span class="lbl">${fmtINR(amount)} in ${baseYear}</span>
+      <span class="arrow">→</span>
+      <span class="result-amt">${fmtINR(lastVal)}</span>
+      <span class="result-year">in ${lastYear}</span>
+    `;
+
+    // Table rows
+    rowsEl.innerHTML = '';
+    years.forEach((y, i) => {
+      const val = values[i];
+      const yearsSince = y - baseYear;
+      const sinceLabel = yearsSince === 0
+        ? 'reference year'
+        : (yearsSince > 0 ? `+${yearsSince} yrs from ${baseYear}` : `${yearsSince} yrs from ${baseYear}`);
+      const multiplier = val / amount;
+      const barPct = Math.max(4, (val / maxVal) * 100);
+
+      const tr = document.createElement('tr');
+      tr.style.animationDelay = (i * 0.06) + 's';
+      tr.innerHTML = `
+        <td class="year">${y}<span class="since">${sinceLabel}</span></td>
+        <td class="value">${fmtINR(val)}</td>
+        <td class="mult">${multiplier.toFixed(2)}×</td>
+        <td class="bar-cell">
+          <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        </td>
+      `;
+      rowsEl.appendChild(tr);
+
+      // animate bar after insertion
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const fill = tr.querySelector('.bar-fill');
+          if (fill) fill.style.width = barPct + '%';
+        }, 80 + i * 60);
+      });
+    });
+
+    noteEl.textContent = `value(year) = amount × (1 + rate)^(year − ${baseYear}), at ${rate}% annual inflation`;
+  }
+
+  calcBtn.addEventListener('click', calculate);
+  [rateEl, amountEl, baseYearEl, startYearEl, endYearEl].forEach(el => {
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+  });
+
+  calculate();
+</script>
+</body>
+</html>
