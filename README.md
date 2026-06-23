@@ -69,16 +69,6 @@ Inflation-Calculator/
 
 ---
 
-## 📷 Screenshot
-
-Add a screenshot:
-
-```markdown
-![Screenshot](screenshot.png)
-```
-
----
-
 ## 💡 Example Values
 
 | Amount | Inflation | Base Year | Target Year | Equivalent Value |
@@ -95,5 +85,4 @@ This project is open-source and available under the MIT License.
 ---
 
 ## ❤️ Author
-
-Made with HTML, CSS, and JavaScript.
+Made with HTML, CSS, and JavaScript by ##Nirmal .
