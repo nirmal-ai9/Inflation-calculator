@@ -85,4 +85,4 @@ This project is open-source and available under the MIT License.
 ---
 
 ## ❤️ Author
-Made with HTML, CSS, and JavaScript by ##Nirmal .
+Made with HTML, CSS, and JavaScript by **Nirmal** .
