@@ -84,5 +84,15 @@ This project is open-source and available under the MIT License.
 
 ---
 
+## 💬 Join Our Discord Community
+
+Have questions, ideas, or feedback? Join the Discord server to discuss projects, suggest features, report bugs, and connect with other developers.
+
+🔗 Discord: https://discord.gg/dKa2wEJGF9
+
+Everyone is welcome. See you there! 🚀
+
+---
+
 ## ❤️ Author
 Made with HTML, CSS, and JavaScript by **Nirmal** .
