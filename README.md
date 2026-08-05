@@ -4,6 +4,11 @@ A modern web-based inflation calculator that shows how money changes in value ov
 
 ---
 
+## Screenshot:
+![Landing page](s.jpg)
+
+---
+
 ## ✨ Features
 
 - Calculate future equivalent values using annual inflation.
