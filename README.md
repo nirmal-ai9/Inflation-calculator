@@ -45,3 +45,13 @@ Found a bug or have an idea for improvement? Feel free to open an issue or submi
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more information.
+
+## Author: Nirmal
+
+<div align="center">
+
+<a href="https://nirmal-ai9.github.io/portfolio/">
+  <img src="https://img.shields.io/badge/Visit_My_Portfolio-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Visit Portfolio" />
+</a>
+
+</div>
