@@ -34,13 +34,17 @@ cd Inflation-calculator
 
 That's it—no dependencies, build tools, or setup required.
 
-## Why I Built This
+## Motivation
 
-I wanted a calculator that explains inflation visually instead of just displaying a single number. This project was also an opportunity to explore interface design, animations, and mathematical calculations while keeping everything lightweight and easy to use.
+This project was built to explain inflation visually rather than through a single static figure. It also served as an exercise in interface design, animation, and applied calculation — kept deliberately lightweight and dependency-free.
 
 ## Contributing
 
-Found a bug or have an idea for improvement? Feel free to open an issue or submit a pull request.
+Contributions are welcome. If you find a bug or have an idea for improvement:
+
+1. Open an issue describing the bug or feature request.
+2. Fork the repository and create a branch for your change.
+3. Submit a pull request with a clear description of what changed and why.
 
 ## License
 
