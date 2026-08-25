@@ -12,6 +12,7 @@
     --bg:#05070c;
     --surface:#0d1119;
     --surface-2:#131a26;
+    --surface-3:#1a2332;
     --border:#1d2532;
     --border-soft:#161d28;
     --text:#e9edf4;
@@ -22,6 +23,9 @@
     --gold:#ffb13d;
     --gold-soft:rgba(255,177,61,0.14);
     --danger:#ff6b6b;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --ease:cubic-bezier(.2,.8,.2,1);
   }
 
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -38,7 +42,18 @@
     line-height:1.5;
   }
 
-  .wrap{max-width:980px;margin:0 auto;}
+  .wrap{max-width:1000px;margin:0 auto;}
+
+  .visually-hidden{
+    position:absolute;width:1px;height:1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;
+  }
+
+  :focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+    border-radius:4px;
+  }
 
   /* ---------- Header ---------- */
   .eyebrow{
@@ -86,7 +101,7 @@
   .panel{
     background:var(--surface);
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:var(--radius-lg);
     padding:26px;
   }
 
@@ -106,7 +121,7 @@
     align-items:center;
     background:var(--surface-2);
     border:1px solid var(--border);
-    border-radius:10px;
+    border-radius:var(--radius-md);
     padding:0 14px;
     transition:border-color .15s ease, box-shadow .15s ease;
   }
@@ -157,7 +172,7 @@
     width:100%;
     margin-top:26px;
     padding:14px;
-    border-radius:10px;
+    border-radius:var(--radius-md);
     border:none;
     background:linear-gradient(135deg, var(--accent), #00a8d6);
     color:#04141a;
@@ -182,11 +197,11 @@
     display:none;
   }
 
-  /* ---------- Results ---------- */
+  /* ---------- Ticker ---------- */
   .ticker{
     background:var(--surface);
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:var(--radius-lg);
     padding:24px 26px;
     margin-bottom:16px;
     display:flex;
@@ -213,11 +228,78 @@
   .ticker .result-year{
     font-size:13px;color:var(--muted);
   }
+  .ticker .delta{
+    margin-left:auto;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--gold-soft);
+    color:var(--gold);
+    white-space:nowrap;
+  }
 
+  /* ---------- Signature: index curve ---------- */
+  .curve-panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:22px 26px 16px;
+    margin-bottom:16px;
+  }
+  .curve-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+  }
+  .curve-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:14px;
+  }
+  .curve-title span{color:var(--muted-2);font-weight:400;font-size:12px;}
+  .curve-svg{width:100%;height:120px;display:block;overflow:visible;}
+  .curve-area{
+    fill:url(#curveGradient);
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  .curve-line{
+    fill:none;
+    stroke:var(--gold);
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    filter:drop-shadow(0 0 6px rgba(255,177,61,0.5));
+  }
+  .curve-dot{
+    fill:var(--bg);
+    stroke:var(--gold);
+    stroke-width:2;
+    opacity:0;
+    transition:opacity .3s ease .4s;
+  }
+  .curve-baseline{
+    stroke:var(--border);
+    stroke-width:1;
+    stroke-dasharray:3 4;
+  }
+  .curve-labels{
+    display:flex;
+    justify-content:space-between;
+    margin-top:6px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--muted-2);
+  }
+
+  /* ---------- Results table ---------- */
   .table-panel{
     background:var(--surface);
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:var(--radius-lg);
     overflow:hidden;
   }
   table{width:100%;border-collapse:collapse;}
@@ -243,8 +325,10 @@
   tbody tr{
     opacity:0;
     transform:translateY(6px);
-    animation:rowIn .45s ease forwards;
+    animation:rowIn .45s var(--ease) forwards;
+    transition:background-color .15s ease;
   }
+  tbody tr:hover{background:var(--surface-2);}
 
   @keyframes rowIn{
     to{opacity:1; transform:translateY(0);}
@@ -289,7 +373,7 @@
     background:linear-gradient(90deg, var(--accent), var(--gold));
     box-shadow:0 0 8px rgba(0,212,255,0.5);
     width:0%;
-    transition:width .6s cubic-bezier(.2,.8,.2,1);
+    transition:width .6s var(--ease);
   }
 
   .note{
@@ -302,6 +386,12 @@
   @media (max-width:560px){
     thead th:nth-child(3), tbody td.mult{display:none;}
     td.bar-cell{width:70px;}
+    .ticker .delta{margin-left:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    tbody tr{animation:none; opacity:1; transform:none;}
+    .bar-fill, .curve-area, .curve-dot, button#calc{transition:none;}
   }
 </style>
 </head>
@@ -315,7 +405,7 @@
   <div class="grid">
 
     <!-- Input panel -->
-    <div class="panel">
+    <form class="panel" id="calcForm">
       <div class="field">
         <label for="rate">Inflation rate (annual)</label>
         <div class="input-row">
@@ -341,25 +431,46 @@
       </div>
 
       <div class="field">
-        <label>Duration</label>
-        <div class="year-pair">
+        <label id="durationLabel">Duration</label>
+        <div class="year-pair" role="group" aria-labelledby="durationLabel">
           <div class="input-row">
+            <label for="startYear" class="visually-hidden">Start year</label>
             <input type="number" id="startYear" value="2020" step="1" inputmode="numeric">
           </div>
-          <span class="to">to</span>
+          <span class="to" aria-hidden="true">to</span>
           <div class="input-row">
+            <label for="endYear" class="visually-hidden">End year</label>
             <input type="number" id="endYear" value="2022" step="1" inputmode="numeric">
           </div>
         </div>
       </div>
 
-      <button id="calc">Calculate</button>
-      <p class="error" id="errMsg"></p>
-    </div>
+      <button id="calc" type="submit">Calculate</button>
+      <p class="error" id="errMsg" role="alert"></p>
+    </form>
 
     <!-- Results -->
     <div>
       <div class="ticker" id="ticker"></div>
+
+      <div class="curve-panel">
+        <div class="curve-head">
+          <span class="curve-title">Index curve <span id="curveRange"></span></span>
+        </div>
+        <svg class="curve-svg" id="curveSvg" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffb13d" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#ffb13d" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line class="curve-baseline" x1="0" y1="100" x2="600" y2="100"/>
+          <path class="curve-area" id="curveAreaPath" d=""/>
+          <path class="curve-line" id="curveLinePath" d="" pathLength="1"/>
+          <g id="curveDots"></g>
+        </svg>
+        <div class="curve-labels" id="curveLabels"></div>
+      </div>
 
       <div class="table-panel">
         <table>
@@ -381,16 +492,21 @@
 </div>
 
 <script>
+  const form = document.getElementById('calcForm');
   const rateEl = document.getElementById('rate');
   const amountEl = document.getElementById('amount');
   const baseYearEl = document.getElementById('baseYear');
   const startYearEl = document.getElementById('startYear');
   const endYearEl = document.getElementById('endYear');
-  const calcBtn = document.getElementById('calc');
   const errMsg = document.getElementById('errMsg');
   const rowsEl = document.getElementById('rows');
   const tickerEl = document.getElementById('ticker');
   const noteEl = document.getElementById('formulaNote');
+  const curveAreaPath = document.getElementById('curveAreaPath');
+  const curveLinePath = document.getElementById('curveLinePath');
+  const curveDots = document.getElementById('curveDots');
+  const curveLabels = document.getElementById('curveLabels');
+  const curveRange = document.getElementById('curveRange');
 
   const fmtINR = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
 
@@ -400,6 +516,50 @@
   }
   function clearError(){
     errMsg.style.display = 'none';
+  }
+
+  // Maps a values array onto the 600×120 viewBox and draws the area + line.
+  function drawCurve(values){
+    const w = 600, h = 120, padTop = 12, padBottom = 20;
+    const min = Math.min(...values, values[0]);
+    const max = Math.max(...values, values[0]);
+    const range = (max - min) || 1;
+
+    const points = values.map((v, i) => {
+      const x = values.length === 1 ? 0 : (i / (values.length - 1)) * w;
+      const y = h - padBottom - ((v - min) / range) * (h - padTop - padBottom);
+      return [x, y];
+    });
+
+    const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const areaPath = linePath + ` L${w},${h} L0,${h} Z`;
+
+    curveLinePath.setAttribute('d', linePath);
+    curveAreaPath.setAttribute('d', areaPath);
+
+    // Reset draw-in animation for the line.
+    curveLinePath.style.strokeDasharray = '1';
+    curveLinePath.style.strokeDashoffset = '1';
+    curveLinePath.getBoundingClientRect(); // force reflow
+    curveLinePath.style.transition = 'stroke-dashoffset .9s ' + 'cubic-bezier(.2,.8,.2,1)';
+    requestAnimationFrame(() => { curveLinePath.style.strokeDashoffset = '0'; });
+
+    curveAreaPath.style.opacity = '0';
+    setTimeout(() => { curveAreaPath.style.opacity = '1'; }, 250);
+
+    curveDots.innerHTML = '';
+    points.forEach((p, i) => {
+      const isEdge = i === 0 || i === points.length - 1;
+      if (!isEdge && points.length > 2) return;
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('class', 'curve-dot');
+      dot.setAttribute('cx', p[0]);
+      dot.setAttribute('cy', p[1]);
+      dot.setAttribute('r', 4);
+      dot.style.transitionDelay = (0.5 + i * 0.05) + 's';
+      curveDots.appendChild(dot);
+      requestAnimationFrame(() => { setTimeout(() => { dot.style.opacity = '1'; }, 30); });
+    });
   }
 
   function calculate(){
@@ -439,12 +599,22 @@
     // Ticker — headline conversion (reference year -> last year in range)
     const lastYear = years[years.length - 1];
     const lastVal = values[values.length - 1];
+    const firstVal = values[0];
+    const rangeChangePct = ((lastVal - firstVal) / firstVal) * 100;
+    const deltaSign = rangeChangePct >= 0 ? '+' : '';
+
     tickerEl.innerHTML = `
       <span class="lbl">${fmtINR(amount)} in ${baseYear}</span>
       <span class="arrow">→</span>
       <span class="result-amt">${fmtINR(lastVal)}</span>
       <span class="result-year">in ${lastYear}</span>
+      <span class="delta">${deltaSign}${rangeChangePct.toFixed(1)}% across range</span>
     `;
+
+    // Signature index curve
+    drawCurve(values);
+    curveRange.textContent = `${startYear}–${endYear}`;
+    curveLabels.innerHTML = `<span>${fmtINR(values[0])}</span><span>${fmtINR(values[values.length - 1])}</span>`;
 
     // Table rows
     rowsEl.innerHTML = '';
@@ -481,10 +651,7 @@
     noteEl.textContent = `value(year) = amount × (1 + rate)^(year − ${baseYear}), at ${rate}% annual inflation`;
   }
 
-  calcBtn.addEventListener('click', calculate);
-  [rateEl, amountEl, baseYearEl, startYearEl, endYearEl].forEach(el => {
-    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
-  });
+  form.addEventListener('submit', (e) => { e.preventDefault(); calculate(); });
 
   calculate();
 </script>
