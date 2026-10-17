@@ -1,57 +1,51 @@
-# Inflation Calculator
+# Inflation Lab
 
-Inflation Calculator is a web application that shows how the value of money changes over time because of inflation. By entering an amount, an annual inflation rate, and a range of years, you can instantly compare the purchasing power of money across different points in time.
+A polished, dependency-free inflation calculator for exploring how purchasing power changes over time.
 
-The project was created to make inflation easier to understand through interactive calculations and a clean, modern interface. Instead of focusing on financial jargon, it presents the numbers in a simple way that's useful for learning, planning, or satisfying curiosity.
+## Project structure
 
-## Screenshot:
-![Landing page](s.jpg)
-
-## Join Our Discord Community
-
-Have questions, ideas, or feedback? Join the Discord server to discuss projects, suggest features, report bugs, and connect with other developers.
-
-🔗 Discord: https://discord.gg/dKa2wEJGF9
-
-Everyone is welcome. See you there!
+```text
+Inflation-calculator-main/
+├── index.html
+├── assets/
+│   └── preview.jpg
+├── src/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       ├── app.js          # application wiring + events
+│       ├── calculator.js   # validation + inflation calculations
+│       ├── chart.js        # canvas chart rendering
+│       ├── config.js       # defaults, symbols, storage keys
+│       ├── dom.js          # DOM element references
+│       ├── export.js       # CSV export
+│       ├── format.js       # currency/percentage formatting
+│       ├── storage.js      # localStorage persistence
+│       └── ui.js           # results/table rendering
+├── LICENSE
+└── README.md
+```
 
 ## Features
 
-- Calculate the future value of money using compound inflation.
-- Compare the equivalent value across multiple years.
-- View growth as both monetary value and multiplier.
-- Modern, responsive interface with instant calculations.
-- No installation or internet connection required after downloading.
+- Compound inflation calculations
+- INR, USD, EUR, GBP and JPY display options
+- Interactive year range and quick presets
+- Canvas inflation curve
+- Year-by-year comparison table
+- Purchasing-power and multiplier metrics
+- CSV export
+- Dark/light theme with persistence
+- Saved calculator settings
+- Responsive mobile layout
+- No framework, backend or build step
 
-## Running the Project
+## Run locally
 
-Clone the repository and open `index.html` in your browser.
+Because the app uses JavaScript modules, serve the folder with a small local HTTP server instead of opening `index.html` directly.
 
 ```bash
-git clone https://github.com/nirmal-ai9/Inflation-calculator.git
-cd Inflation-calculator
+python -m http.server 8000
 ```
 
-That's it—no dependencies, build tools, or setup required.
-
-## Motivation
-
-This project was built to explain inflation visually rather than through a single static figure. It also served as an exercise in interface design, animation, and applied calculation — kept deliberately lightweight and dependency-free.
-
-## Contributing
-
-Contributions are welcome. If you find a bug or have an idea for improvement:
-
-1. Open an issue describing the bug or feature request.
-2. Fork the repository and create a branch for your change.
-3. Submit a pull request with a clear description of what changed and why.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more information.
-
-## Author : Nirmal
-
-<div align="center">
-  <a href="https://nirmal-ai9.github.io/portfolio/"><img src="https://img.shields.io/badge/Portfolio-View-1a1a2e?style=for-the-badge" alt="Portfolio" /></a>
-</div>
+Then open `http://localhost:8000` in your browser.
